@@ -1,6 +1,6 @@
 const uuid = require('uuid')
 const path = require('path')
-const {Product, ProductInfo} = require('../models/models')
+const {Product, ProductInfo, Rating} = require('../models/models')
 const ApiError = require('../error/ApiError')
 
 class ProductController{
@@ -59,6 +59,32 @@ class ProductController{
             }
         )
         return res.json(product)
+    }
+
+    async addRating (req, res, next){
+        const { id } = req.params
+        const { rating } = req.body
+
+        if (!rating || rating < 1 || rating > 5){
+            return next(ApiError.badRequest('Invalid rating'))
+        }
+
+        const product = await Product.findOne({ where: { id } })
+
+        if (!product){
+            return next(ApiError.badRequest('Product not found'))
+        }
+
+        const newRating = (product.rating * product.numRatings + rating) / (product.numRatings + 1)
+
+        await Product.update(
+            { rating: newRating, numRatings: product.numRatings + 1 },
+            { where: { id } }
+        )
+
+        await Rating.create({ productId: id, rating })
+
+        return res.json({ message: 'Rating added successfully'})
     }
 }
 
