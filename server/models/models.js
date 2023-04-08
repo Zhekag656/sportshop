@@ -10,10 +10,13 @@ const User = sequelize.define('user', {
 
 const Basket = sequelize.define('basket', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    //products: {type: BasketProduct[Product]}
 })
 
 const BasketProduct = sequelize.define('basket_product', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    //product: { type: Product },
+    count: { type: DataTypes.INTEGER, defaultValue: 0 }
 })
 
 const Product = sequelize.define('product', {
